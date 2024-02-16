@@ -17,6 +17,42 @@ project(clap-saw-demo-imgui VERSION 0.9.0 LANGUAGES C CXX)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 17)
 
+
+
+
+#if (NOT ELEMENTS_ROOT)
+#   message(FATAL_ERROR "ELEMENTS_ROOT is not set")
+#endif()
+
+# Make sure ELEMENTS_ROOT is an absolute path to add to the CMake module path
+#get_filename_component(ELEMENTS_ROOT "${ELEMENTS_ROOT}" ABSOLUTE)
+#set (CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${ELEMENTS_ROOT}/cmake")
+
+# If we are building outside the project, you need to set ELEMENTS_ROOT:
+#if (NOT ELEMENTS_BUILD_EXAMPLES)
+#   include(ElementsConfigCommon)
+#   set(ELEMENTS_BUILD_EXAMPLES OFF)
+#   add_subdirectory(${ELEMENTS_ROOT} elements)
+#endif()
+
+#set(ELEMENTS_APP_PROJECT "SpriteSlidersAndKnobs")
+#set(ELEMENTS_APP_TITLE "Sprite Sliders And Knobs")
+#set(ELEMENTS_APP_COPYRIGHT "Copyright (c) z.prime")
+#set(ELEMENTS_APP_ID "com.zeek.sprite-sliders-and-knobs")
+#set(ELEMENTS_APP_VERSION "1.0")
+
+#set(ELEMENTS_APP_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
+#set(ELEMENTS_APP_RESOURCES
+#   ${CMAKE_CURRENT_SOURCE_DIR}/resources/knob_sprites_white_128x128.png
+#   ${CMAKE_CURRENT_SOURCE_DIR}/resources/slider-white.png
+#)
+
+#include(ElementsConfigApp)
+
+
+
+
+
 if (APPLE)
     option(USE_SANITIZER "Build and link with ASAN" FALSE)
 endif()
@@ -28,8 +64,10 @@ add_subdirectory(libs/clap EXCLUDE_FROM_ALL)
 add_subdirectory(libs/clap-helpers EXCLUDE_FROM_ALL)
 add_subdirectory(libs/readerwriterqueue EXCLUDE_FROM_ALL)
 
-set(IMGUI_SOURCE_DIR ${CMAKE_SOURCE_DIR}/libs/imgui)
-add_subdirectory(libs/clap-imgui-support EXCLUDE_FROM_ALL)
+#set(IMGUI_SOURCE_DIR ${CMAKE_SOURCE_DIR}/libs/imgui)
+#add_subdirectory(libs/clap-imgui-support EXCLUDE_FROM_ALL)
+set(ELEMENTS_ROOT ${CMAKE_SOURCE_DIR}/elements)
+add_subdirectory(${ELEMENTS_ROOT} elements EXCLUDE_FROM_ALL)
 
 add_library(${PROJECT_NAME} MODULE
         src/clap-saw-demo.cpp
@@ -37,7 +75,7 @@ add_library(${PROJECT_NAME} MODULE
         src/saw-voice.cpp
         src/clap-saw-demo-pluginentry.cpp 
 )
-target_link_libraries(${PROJECT_NAME} clap-core clap-helpers readerwriterqueue imgui-clap-support)
+target_link_libraries(${PROJECT_NAME} clap-core clap-helpers readerwriterqueue elements)
 if(APPLE)
     set_target_properties(${PROJECT_NAME} PROPERTIES
             BUNDLE True

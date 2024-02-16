@@ -6,7 +6,11 @@
 #include "clap-saw-demo.h"
 #include "clap/clap.h"
 
-#include "imgui.h"
+//#include "imgui.h"
+#include <elements.hpp>
+
+using namespace cycfi::elements;
+using namespace cycfi::artist;
 
 #define STR_INDIR(x) #x
 #define STR(x) STR_INDIR(x)

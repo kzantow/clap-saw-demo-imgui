@@ -13,3 +13,6 @@
 [submodule "libs/clap-imgui-support"]
 	path = libs/clap-imgui-support
 	url = https://github.com/free-audio/clap-imgui-support
+[submodule "elements"]
+	path = elements
+	url = git@github.com:kzantow/elements.git
