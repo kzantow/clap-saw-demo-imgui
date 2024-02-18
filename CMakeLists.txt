@@ -9,7 +9,8 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 if(NOT CMAKE_BUILD_TYPE)
     message(STATUS "CMAKE_BUILD_TYPE Type Unspecified; picking Release")
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
+    # set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
+    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "" FORCE)
 endif()
 
 project(clap-saw-demo-imgui VERSION 0.9.0 LANGUAGES C CXX)
@@ -29,11 +30,9 @@ set(CMAKE_CXX_STANDARD 17)
 #set (CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${ELEMENTS_ROOT}/cmake")
 
 # If we are building outside the project, you need to set ELEMENTS_ROOT:
-#if (NOT ELEMENTS_BUILD_EXAMPLES)
-#   include(ElementsConfigCommon)
-#   set(ELEMENTS_BUILD_EXAMPLES OFF)
-#   add_subdirectory(${ELEMENTS_ROOT} elements)
-#endif()
+set(ELEMENTS_ROOT ${CMAKE_SOURCE_DIR}/libs/elements)
+set(ELEMENTS_BUILD_EXAMPLES OFF)
+add_subdirectory(${ELEMENTS_ROOT} elements)
 
 #set(ELEMENTS_APP_PROJECT "SpriteSlidersAndKnobs")
 #set(ELEMENTS_APP_TITLE "Sprite Sliders And Knobs")
@@ -66,16 +65,46 @@ add_subdirectory(libs/readerwriterqueue EXCLUDE_FROM_ALL)
 
 #set(IMGUI_SOURCE_DIR ${CMAKE_SOURCE_DIR}/libs/imgui)
 #add_subdirectory(libs/clap-imgui-support EXCLUDE_FROM_ALL)
-set(ELEMENTS_ROOT ${CMAKE_SOURCE_DIR}/elements)
-add_subdirectory(${ELEMENTS_ROOT} elements EXCLUDE_FROM_ALL)
+#set(ELEMENTS_ROOT ${CMAKE_SOURCE_DIR}/libs/elements)
+#add_subdirectory(${ELEMENTS_ROOT}/lib EXCLUDE_FROM_ALL)
+
+#set(HEADER_FILES src/clap-saw-demo-editor.h src/clap-saw-demo.h)
+
+file(GLOB_RECURSE SOURCE_FILES 
+	src/*.cpp
+)
+
+file(GLOB_RECURSE HEADER_FILES
+	src/*.h
+)
+
+#source_group("Source Files\\plugin"
+source_group(
+   TREE src
+   PREFIX "Source Files\\plugin"
+   FILES ${SOURCE_FILES}
+)
+
+source_group("Header Files\\plugin"
+   FILES ${HEADER_FILES}
+)
+
+source_group("Header Files\\lib"
+   REGULAR_EXPRESSION .*hpp
+)
 
 add_library(${PROJECT_NAME} MODULE
-        src/clap-saw-demo.cpp
-        src/clap-saw-demo-editor.cpp
-        src/saw-voice.cpp
+	src/clap-saw-demo.cpp
+	src/clap-saw-demo-editor.cpp
+	src/saw-voice.cpp
         src/clap-saw-demo-pluginentry.cpp 
+	${HEADER_FILES}
 )
+
+target_include_directories(${PROJECT_NAME} PRIVATE src)
+
 target_link_libraries(${PROJECT_NAME} clap-core clap-helpers readerwriterqueue elements)
+
 if(APPLE)
     set_target_properties(${PROJECT_NAME} PROPERTIES
             BUNDLE True
