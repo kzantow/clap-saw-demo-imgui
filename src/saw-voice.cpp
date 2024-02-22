@@ -19,8 +19,7 @@
 
 namespace sst::clap_saw_demo
 {
-float pival =
-    3.14159265358979323846; // I always forget what you need for M_PI to work on all platforms
+float pival = 3.141592653589793238462643383279502884197; // I always forget what you need for M_PI to work on all platforms
 
 void SawDemoVoice::recalcPitch()
 {

@@ -4,29 +4,44 @@
 
 #ifndef CLAP_SAW_DEMO_EDITOR_H
 #define CLAP_SAW_DEMO_EDITOR_H
+#include <elements.hpp>
+
 #include "clap-saw-demo.h"
-#include "imgui-clap-support/imgui-clap-editor.h"
+#include <elements/base_view.hpp>
 #include <unordered_map>
+
+using namespace cycfi::elements;
 
 namespace sst::clap_saw_demo
 {
 
-struct ClapSawDemoEditor : public imgui_clap_editor
+struct ElementsEditor {
+    base_view* view;
+    
+    ~ElementsEditor() {
+        if (view != nullptr) {
+            delete view;
+        }
+        view = nullptr;
+    }
+};
+
+struct ClapSawDemoEditor : public ElementsEditor
 {
     ClapSawDemoEditor(ClapSawDemo::SynthToUI_Queue_t &, ClapSawDemo::UIToSynth_Queue_t &,
                       const ClapSawDemo::DataCopyForUI &, std::function<void()>);
     
     // Write your ImGui Code here
-    void onRender() override;
+//    void onRender() override;
     
     // GUI Helper functions
 
     // create a slider with start/end edit messagess
-    void addSliderForParam(clap_id pid, const char* label, float min, float max);
-    // a on/off switch for a parameter
-    void addSwitchForParam(clap_id pid, const char* label, bool reverse);
-    // this creates a radio button in one layout line
-    void addRadioButtonForParam(clap_id pid, std::vector<std::pair<int, const char*>>);
+//    void addSliderForParam(clap_id pid, const char* label, float min, float max);
+//    // a on/off switch for a parameter
+//    void addSwitchForParam(clap_id pid, const char* label, bool reverse);
+//    // this creates a radio button in one layout line
+//    void addRadioButtonForParam(clap_id pid, std::vector<std::pair<int, const char*>>);
     
     // Parameter Queues
     

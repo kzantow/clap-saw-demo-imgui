@@ -3,7 +3,7 @@ cmake_policy(SET CMP0091 NEW) # use CMAKE_MSVC_RUNTIME_LIBRARY
 
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 if (APPLE)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.11 CACHE STRING "Build for 10.1")
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15 CACHE STRING "Build for 10.1")
 endif()
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -16,9 +16,14 @@ endif()
 project(clap-saw-demo-imgui VERSION 0.9.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
-
+#if(APPLE)
+#  # Xcode automatically adds -Wshorten-64-to-32 to C++ flags
+#  list(APPEND common_gcc_clang_compile_options
+#    -Wno-shorten-64-to-32
+#  )
+#endif()
 
 
 #if (NOT ELEMENTS_ROOT)
@@ -122,6 +127,7 @@ if(APPLE)
             -Werror
             $<$<BOOL:${USE_SANITIZER}>:-fsanitize=address>
             $<$<BOOL:${USE_SANITIZER}>:-fsanitize=undefined>
+            -Wno-shorten-64-to-32
             )
     target_link_options(${PROJECT_NAME} PRIVATE
             $<$<BOOL:${USE_SANITIZER}>:-fsanitize=address>
