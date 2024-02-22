@@ -73,6 +73,11 @@ void ClapSawDemo::guiDestroy() noexcept
     editor = nullptr;
 }
 
+// Main window background color
+auto constexpr bkd_color = rgba(235, 35, 37, 255);
+auto background = box(bkd_color);
+
+
 /*
  * guiSetParent is the core API for a clap HOST which has a window to
  * reparent the editor to that host managed window. It sends a
@@ -81,29 +86,48 @@ void ClapSawDemo::guiDestroy() noexcept
  */
 bool ClapSawDemo::guiSetParent(const clap_window *window) noexcept
 {
-    assert(editor);
-    host_view_handle hv;
-#if IS_MAC
-    if (strcmp(window->api, CLAP_WINDOW_API_COCOA) == 0)
-       hv = static_cast<host_view_handle>(window->cocoa);
-#endif
-
-#if IS_WIN
-    if (strcmp(window->api, CLAP_WINDOW_API_WIN32) == 0)
-        hv = static_cast<host_view_handle>(window->win32);
-#endif
-
-#if IS_LINUX
-    if (strcmp(window->api, CLAP_WINDOW_API_X11) == 0)
-        hv = static_cast<host_view_handle>(window->x11);
-#endif
+    if (!editor) {
+        return false;
+    }
+    //assert(editor);
+    host_view_handle view_handle = static_cast<host_view_handle>(window->ptr);
+//#if IS_MAC
+//    if (strcmp(window->api, CLAP_WINDOW_API_COCOA) == 0)
+//        view_handle =
+//#endif
+//
+//#if IS_WIN
+//    if (strcmp(window->api, CLAP_WINDOW_API_WIN32) == 0)
+//        view_handle = static_cast<host_view_handle>(window->win32);
+//#endif
+//
+//#if IS_LINUX
+//    if (strcmp(window->api, CLAP_WINDOW_API_X11) == 0)
+//        view_handle = static_cast<host_view_handle>(window->x11);
+//#endif
 
 //        auto res = imgui_clap_guiSetParentWith(editor, window);
-    if (!hv)
+    if (!view_handle)
         return false;
     
-    editor->view = new base_view(hv);
-    editor->view->refresh();
+//           editor->_view = std::make_unique<elements::view>(elements::extent{ PLUG_WIDTH, PLUG_HEIGHT });
+    
+    if (editor->_view){
+        return false;
+    }
+    editor->_view = new view(view_handle);
+    editor->_view->content(
+                          background
+                          );
+//    editor->view->refresh();
+    
+//    view view_(_win);
+//
+//       view_.content(
+//          make_child_window({10, 10, 300, 200}, "Child Window 1"),
+//          make_child_window({60, 60, 350, 250}, "Child Window 2"),
+//          background
+//       );
     
     if (dataCopyForUI.isProcessing)
     {
@@ -150,7 +174,9 @@ bool ClapSawDemo::guiSetSize(uint32_t width, uint32_t height) noexcept
     _DBGCOUT << _D(width) << _D(height) << std::endl;
     assert(editor);
 //    return imgui_clap_guiSetSizeWith(editor, width, height);
-    editor->view->size(extent(point(width, height)));
+    if (editor->_view != nullptr) {
+        editor->_view->size(extent(point(width, height)));
+    }
 }
 
 /*

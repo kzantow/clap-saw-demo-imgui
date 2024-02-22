@@ -16,13 +16,13 @@ namespace sst::clap_saw_demo
 {
 
 struct ElementsEditor {
-    base_view* view;
+    view* _view = nullptr;
     
     ~ElementsEditor() {
-        if (view != nullptr) {
-            delete view;
+        if (_view != nullptr) {
+            delete _view;
         }
-        view = nullptr;
+        _view = nullptr;
     }
 };
 
