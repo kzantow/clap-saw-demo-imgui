@@ -1,17 +1,18 @@
 cmake_minimum_required(VERSION 3.15)
 cmake_policy(SET CMP0091 NEW) # use CMAKE_MSVC_RUNTIME_LIBRARY
 
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+# we probably want this, but elements fails to build in debug mode:
+#set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
 if (APPLE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15 CACHE STRING "Build for 10.1")
 endif()
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-if(NOT CMAKE_BUILD_TYPE)
-    message(STATUS "CMAKE_BUILD_TYPE Type Unspecified; picking Release")
-    # set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
-    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "" FORCE)
-endif()
+#if(NOT CMAKE_BUILD_TYPE)
+#    message(STATUS "CMAKE_BUILD_TYPE Type Unspecified; picking Release")
+#    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
+#endif()
 
 project(clap-saw-demo-imgui VERSION 0.9.0 LANGUAGES C CXX)
 
@@ -35,9 +36,11 @@ set(CMAKE_CXX_STANDARD 20)
 #set (CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${ELEMENTS_ROOT}/cmake")
 
 # If we are building outside the project, you need to set ELEMENTS_ROOT:
-set(ELEMENTS_ROOT ${CMAKE_SOURCE_DIR}/libs/elements)
+#set(ELEMENTS_ROOT ${CMAKE_SOURCE_DIR}/libs/elements)
+set(ELEMENTS_ROOT libs/elements)
 set(ELEMENTS_BUILD_EXAMPLES OFF)
-add_subdirectory(${ELEMENTS_ROOT} elements)
+add_subdirectory(${ELEMENTS_ROOT} EXCLUDE_FROM_ALL)
+#add_subdirectory(${ELEMENTS_ROOT} elements EXCLUDE_FROM_ALL)
 
 #set(ELEMENTS_APP_PROJECT "SpriteSlidersAndKnobs")
 #set(ELEMENTS_APP_TITLE "Sprite Sliders And Knobs")
@@ -52,7 +55,6 @@ add_subdirectory(${ELEMENTS_ROOT} elements)
 #)
 
 #include(ElementsConfigApp)
-
 
 
 
@@ -161,4 +163,23 @@ else()
     target_link_libraries(${PROJECT_NAME} d3d12.lib dxgi.lib d3dcompiler.lib dxguid.lib)
     target_compile_definitions(${PROJECT_NAME} PRIVATE IS_WIN=1)
     set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".clap" PREFIX "")
+
+    if (DEBUG_COMMAND)
+        message(STATUS "Using DEBUG_COMMAND: " ${DEBUG_COMMAND})
+        set_target_properties(${PROJECT_NAME} PROPERTIES VS_DEBUGGER_COMMAND ${DEBUG_COMMAND})
+        #set_target_properties(${PROJECT_NAME} PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS "--gtest_filter=Test_Cases1*")
+        #set(VS_DEBUGGER_COMMAND DEBUG_COMMAND)
+    endif()
+
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+
+    if (${COPY_AFTER_BUILD})
+        message(STATUS "Will copy plugin after every build" )
+        set(products_folder ${CMAKE_BINARY_DIR})
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E echo "Installing ${products_folder}/${PROJECT_NAME}.clap to C:/Program Files/Common Files/CLAP/"
+                COMMAND ${CMAKE_COMMAND} -E make_directory "C:/Program Files/Common Files/CLAP"
+                COMMAND ${CMAKE_COMMAND} -E copy_directory "${products_folder}/${PROJECT_NAME}.clap" "C:/Program Files/Common Files/CLAP/${PROJECT_NAME}.clap"
+                )
+    endif()
 endif()

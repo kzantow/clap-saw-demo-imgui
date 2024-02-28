@@ -7,12 +7,6 @@
 [submodule "libs/readerwriterqueue"]
 	path = libs/readerwriterqueue
 	url = https://github.com/cameron314/readerwriterqueue
-[submodule "libs/imgui"]
-	path = libs/imgui
-	url = https://github.com/ocornut/imgui.git
-[submodule "libs/clap-imgui-support"]
-	path = libs/clap-imgui-support
-	url = https://github.com/free-audio/clap-imgui-support
 [submodule "libs/elements"]
 	path = libs/elements
 	url = git@github.com:kzantow/elements.git
